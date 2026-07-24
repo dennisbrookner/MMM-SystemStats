@@ -22,9 +22,9 @@ Module.register('MMM-SystemStats', {
   },
   // Define required styles.
   getStyles: function() {
-    return ["font-awesome.css"];
+  return ["font-awesome.css", "MMM-SystemStats.css"];
   },
-  // Define required scripts.
+	// Define required scripts.
 	getScripts: function () {
       return ["moment.js", "moment-duration-format.js"];
 	},
@@ -80,7 +80,8 @@ Module.register('MMM-SystemStats', {
   // Override dom generator.
   getDom: function() {
     var self = this;
-    var wrapper = document.createElement('table');
+    var wrapper = document.createElement('div');
+    wrapper.className = 'stats-grid';
 
     var sysData = {
       cpuTemp: {
@@ -102,10 +103,11 @@ Module.register('MMM-SystemStats', {
     };
 
     Object.keys(sysData).forEach(function (item){
-      var row = document.createElement('tr');
+      var row = document.createElement('div');
+      row.className = 'stats-item';
 
       if (self.config.label.match(/^(text|textAndIcon)$/)) {
-        var c1 = document.createElement('td');
+        var c1 = document.createElement('div');
         c1.setAttribute('class', 'title');
         c1.style.textAlign = self.config.align;
         c1.innerText = self.translate(sysData[item].text);
@@ -113,12 +115,12 @@ Module.register('MMM-SystemStats', {
       }
 
       if (self.config.label.match(/^(icon|textAndIcon)$/)) {
-        var c2 = document.createElement('td');
+        var c2 = document.createElement('div');
         c2.innerHTML = `<i class="fas ${sysData[item].icon} fa-fw"></i>`;
         row.appendChild(c2);
       }
 
-      var c3 = document.createElement('td');
+      var c3 = document.createElement('div');
       c3.setAttribute('class', 'value');
       c3.style.textAlign = self.config.align;
       c3.innerText = self.stats[item];
