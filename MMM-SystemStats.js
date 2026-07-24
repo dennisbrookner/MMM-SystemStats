@@ -50,6 +50,7 @@ Module.register('MMM-SystemStats', {
     this.stats.cpuTemp = this.translate('LOADING').toLowerCase();
     this.stats.sysLoad = this.translate('LOADING').toLowerCase();
     this.stats.freeMem = this.translate('LOADING').toLowerCase();
+    this.stats.fanSpeed = this.translate('LOADING').toLowerCase();
     let config = this.config;
     config.memTrans = this.translate('MEM_NAME');
     this.sendSocketNotification('CONFIG', config);
@@ -71,6 +72,7 @@ Module.register('MMM-SystemStats', {
       }
       this.stats.sysLoad = payload.sysLoad;
       this.stats.freeMem = payload.freeMem + '%';
+      this.stats.fanSpeed = payload.fanSpeed.trim() + ' RPM';
       this.updateDom(this.config.animationSpeed);
     }
   },
@@ -92,7 +94,11 @@ Module.register('MMM-SystemStats', {
       freeMem: {
         text: 'RAM_FREE',
         icon: 'fa-microchip',
-      }
+      },
+      fanSpeed: {
+	 text: 'FAN_SPEED',
+	 icon: 'fa-fan',
+      },
     };
 
     Object.keys(sysData).forEach(function (item){

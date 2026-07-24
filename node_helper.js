@@ -63,8 +63,10 @@ module.exports = NodeHelper.create({
       async.apply(exec, temp_conv + ' /sys/class/thermal/thermal_zone0/temp'),
       // get system load
       async.apply(exec, 'mpstat -P ALL 1 1 | awk \'/Average:/ && $2 ~ /^[0-9]+$/ {printf "%.0f%%, ", 100-$NF}\' | sed \'s/, $//\''),
-      // get free ram in %
-      async.apply(exec, 'free | awk \'/^' + this.config.memTrans + ':/ {printf "%.0f", ($7*100/$2)}\''),
+      // get ram usage (not free ram as the name suggests!!!!) in %
+      async.apply(exec, 'free | awk \'/^' + this.config.memTrans + ':/ {printf "%.0f", 100-($7*100/$2)}\''),
+      // get fan speed in RPM
+      async.apply(exec, 'cat /sys/devices/platform/cooling_fan/hwmon/hwmon3/fan1_input'),
 
     ],
     function (err, res) {
@@ -72,6 +74,7 @@ module.exports = NodeHelper.create({
       stats.cpuTemp = res[0][0];
       stats.sysLoad = res[1][0];
       stats.freeMem = res[2][0];
+      stats.fanSpeed = res[3][0];
       // console.log(stats);
       self.sendSocketNotification('STATS', stats);
     });
