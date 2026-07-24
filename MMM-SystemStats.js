@@ -50,19 +50,17 @@ Module.register('MMM-SystemStats', {
     this.stats.cpuTemp = this.translate('LOADING').toLowerCase();
     this.stats.sysLoad = this.translate('LOADING').toLowerCase();
     this.stats.freeMem = this.translate('LOADING').toLowerCase();
-    this.stats.upTime = this.translate('LOADING').toLowerCase();
-    this.stats.freeSpace = this.translate('LOADING').toLowerCase();
     let config = this.config;
     config.memTrans = this.translate('MEM_NAME');
     this.sendSocketNotification('CONFIG', config);
   },
 
   socketNotificationReceived: function(notification, payload) {
-    //Log.log('MMM-SystemStats: socketNotificationReceived ' + notification);
-    //Log.log(payload);
+    Log.log('MMM-SystemStats: socketNotificationReceived ' + notification);
+    Log.log(payload);
     if (notification === 'STATS') {
       this.stats.cpuTemp = payload.cpuTemp;
-      //console.log("this.config.useSyslog-" + this.config.useSyslog + ', this.stats.cpuTemp-'+parseInt(this.stats.cpuTemp)+', this.config.thresholdCPUTemp-'+this.config.thresholdCPUTemp);
+      console.log("this.config.useSyslog-" + this.config.useSyslog + ', this.stats.cpuTemp-'+parseInt(this.stats.cpuTemp)+', this.config.thresholdCPUTemp-'+this.config.thresholdCPUTemp);
       if (this.config.useSyslog) {
         var cpuTemp = Math.ceil(parseFloat(this.stats.cpuTemp));
         //console.log('before compare (' + cpuTemp + '/' + this.config.thresholdCPUTemp + ')');
@@ -71,11 +69,8 @@ Module.register('MMM-SystemStats', {
           this.sendSocketNotification('ALERT', {config: this.config, type: 'WARNING', message: this.translate("TEMP_THRESHOLD_WARNING") + ' (' + this.stats.cpuTemp + '/' + this.config.thresholdCPUTemp + ')' });
         }
       }
-      this.stats.sysLoad = payload.sysLoad + '%';
+      this.stats.sysLoad = payload.sysLoad;
       this.stats.freeMem = payload.freeMem + '%';
-      upTime = parseInt(payload.upTime[0]);
-      this.stats.upTime = moment.duration(upTime, "seconds").humanize();
-      this.stats.freeSpace = payload.freeSpace;
       this.updateDom(this.config.animationSpeed);
     }
   },
@@ -97,15 +92,7 @@ Module.register('MMM-SystemStats', {
       freeMem: {
         text: 'RAM_FREE',
         icon: 'fa-microchip',
-      },
-      upTime: {
-        text: 'UPTIME',
-        icon: 'fa-clock',
-      },
-      freeSpace: {
-        text: 'DISK_FREE',
-        icon: 'fa-hdd',
-      },
+      }
     };
 
     Object.keys(sysData).forEach(function (item){
